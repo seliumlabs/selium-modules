@@ -1,0 +1,36 @@
+[package]
+name = "selium-remote-cli"
+version.workspace = true
+edition.workspace = true
+description.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[[bin]]
+name = "selium"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["derive", "env", "help", "std"] }
+futures = { workspace = true, features = ["alloc", "std"] }
+selium-abi = { workspace = true }
+selium-remote-client = { path = "../client" }
+selium-userland = { workspace = true }
+tokio = { workspace = true, features = [
+  "macros",
+  "rt-multi-thread",
+  "time",
+] }
+tracing = { workspace = true, features = ["attributes"] }
+tracing-subscriber = { workspace = true, features = [
+  "ansi",
+  "env-filter",
+  "fmt",
+  "json",
+  "std",
+] }
