@@ -23,9 +23,14 @@ jobs:
         shell: bash
         run: |
           tag="${GITHUB_REF_NAME}"
-          crate="${tag%%-*}"
+          crate="${tag%-*}"
+          version="${tag##*-}"
           if [ "$crate" = "$tag" ]; then
             echo "Tag must be in <directory>-<version> format. Got: $tag"
+            exit 1
+          fi
+          if [ -z "$crate" ] || [ -z "$version" ]; then
+            echo "Tag must include a non-empty directory and version. Got: $tag"
             exit 1
           fi
           if [ ! -f "$crate/Cargo.toml" ]; then
