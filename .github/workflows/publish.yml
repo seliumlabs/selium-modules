@@ -5,8 +5,11 @@ on:
     tags:
       - "*"
 
+permissions:
+  contents: write
+
 jobs:
-  publish:
+  crates-io:
     name: Publish to crates.io
     runs-on: ubuntu-latest
     env:
@@ -44,3 +47,125 @@ jobs:
       - name: cargo publish
         run: cargo publish --workspace --keep-going
         working-directory: ${{ steps.resolve_crate.outputs.crate }}
+
+  artifacts:
+    name: Publish release artifacts
+    if: startsWith(github.ref_name, 'remote-client-')
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: mozilla-actions/sccache-action@bafd42bd91680affe190f697cac6ef3ad958ecba
+
+      - name: cargo build
+        run: cargo build --release -p selium-remote-cli --target ${{ matrix.target }} --manifest-path remote-client/Cargo.toml
+
+      - name: package artifact (nix)
+        if: runner.os != 'Windows'
+        run: |
+          set -euo pipefail
+          target_dir="remote-client/target/${{ matrix.target }}/release"
+          bin="selium"
+          out="selium-remote-cli-${{ matrix.target }}"
+          mkdir -p dist
+          cp "${target_dir}/${bin}" "dist/${bin}"
+          tar -C dist -czf "${out}.tar.gz" "${bin}"
+
+      - name: package artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $targetDir = "remote-client\\target\\${{ matrix.target }}\\release"
+          $bin = "selium.exe"
+          $out = "selium-remote-cli-${{ matrix.target }}"
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item "$targetDir\\$bin" "dist\\$bin"
+          Push-Location dist
+          Compress-Archive -Path "$bin" -DestinationPath "..\\$out.zip"
+          Pop-Location
+
+      - name: upload release assets
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            selium-remote-cli-*.tar.gz
+            selium-remote-cli-*.zip
+
+  wasm:
+    name: Publish WebAssembly modules
+    runs-on: ubuntu-latest
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: mozilla-actions/sccache-action@bafd42bd91680affe190f697cac6ef3ad958ecba
+
+      - name: Resolve crate directory from tag
+        id: resolve_crate
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          crate="${tag%-*}"
+          version="${tag##*-}"
+          if [ "$crate" = "$tag" ]; then
+            echo "Tag must be in <directory>-<version> format. Got: $tag"
+            exit 1
+          fi
+          if [ -z "$crate" ] || [ -z "$version" ]; then
+            echo "Tag must include a non-empty directory and version. Got: $tag"
+            exit 1
+          fi
+          if [ ! -f "$crate/Cargo.toml" ]; then
+            echo "No Cargo.toml found at $crate/Cargo.toml for tag $tag"
+            exit 1
+          fi
+          echo "crate=$crate" >> "$GITHUB_OUTPUT"
+
+      - name: cargo build
+        run: cargo build --release -p selium-${{ steps.resolve_crate.outputs.crate }}-server --target wasm32-unknown-unknown --manifest-path ${{ steps.resolve_crate.outputs.crate }}/Cargo.toml
+
+      - name: package artifact
+        run: |
+          set -euo pipefail
+          crate="${{ steps.resolve_crate.outputs.crate }}"
+          target_dir="${crate}/target/wasm32-unknown-unknown/release"
+          crate_snake="${crate//-/_}"
+          wasm_file="selium_${crate_snake}_server.wasm"
+          artifact="selium-${crate}-server-wasm32-unknown-unknown"
+          mkdir -p dist
+          cp "${target_dir}/${wasm_file}" "dist/${wasm_file}"
+          tar -C dist -czf "${artifact}.tar.gz" "${wasm_file}"
+
+      - name: upload release assets
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            selium-${{ steps.resolve_crate.outputs.crate }}-server-*.tar.gz
