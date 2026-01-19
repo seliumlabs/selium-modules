@@ -65,7 +65,12 @@ struct StartArgs {
     #[arg(short, long, value_enum)]
     capability: Vec<CapabilityArg>,
     /// Comma-separated list of capabilities to grant the process
-    #[arg(long, value_enum, value_delimiter = ',', value_name = "CAPABILITY[,CAPABILITY...]")]
+    #[arg(
+        long,
+        value_enum,
+        value_delimiter = ',',
+        value_name = "CAPABILITY[,CAPABILITY...]"
+    )]
     capabilities: Vec<CapabilityArg>,
     /// Ordered parameter types describing the entrypoint signature. Optional when `--arg` supplies typed values.
     #[arg(short, long, value_enum)]
