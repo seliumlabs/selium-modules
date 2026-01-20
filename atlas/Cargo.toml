@@ -20,7 +20,7 @@ flatbuffers-build = { version = "0.2", default-features = false }
 flatc-fork = { version = "0.5.0", default-features = false }
 futures = { version = "0.3", default-features = false }
 selium-atlas-protocol = { path = "protocol", version = "0.1.0" }
-selium-switchboard = { path = "../switchboard/client", version = "0.1.0", default-features = false }
+selium-switchboard = { path = "../switchboard/client", version = "0.2.0", default-features = false }
 selium-userland = { version = "1.0.0-alpha.1", default-features = false }
 thiserror = { version = "2.0", default-features = false }
 tracing = { version = "0.1", default-features = false }
