@@ -26,7 +26,7 @@ selium-remote-client = { version = "0.1.0", default-features = false }
 selium-switchboard = { path = "client", version = "0.2.0" }
 selium-switchboard-core = { path = "core", version = "0.2.0" }
 selium-switchboard-protocol = { path = "protocol", version = "0.2.0" }
-selium-userland = { version = "1.0.0-alpha.1", default-features = false }
+selium-userland = { version = "1.0.0-alpha.2", default-features = false }
 thiserror = { version = "2.0", default-features = false }
 tokio = { version = "1.49", default-features = false }
 tracing = { version = "0.1", default-features = false }
