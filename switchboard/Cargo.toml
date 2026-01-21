@@ -15,15 +15,11 @@ categories = ["development-tools", "virtualization", "wasm"]
 
 [workspace.dependencies]
 anyhow = { version = "1.0", default-features = false }
-cargo = { version = "0.93", default-features = false }
 flatbuffers = { version = "25.12", default-features = false }
 flatbuffers-build = { version = "0.2", default-features = false }
 flatc-fork = { version = "0.5.0", default-features = false }
 futures = { version = "0.3", default-features = false }
 pin-project = { version = "1.1", default-features = false }
-selium-abi = { version = "1.0.0-alpha.1", default-features = false }
-selium-remote-client = { version = "0.1.0", default-features = false }
-selium-switchboard = { path = "client", version = "0.2.0" }
 selium-switchboard-core = { path = "core", version = "0.2.0" }
 selium-switchboard-protocol = { path = "protocol", version = "0.2.0" }
 selium-userland = { version = "1.0.0-alpha.2", default-features = false }
