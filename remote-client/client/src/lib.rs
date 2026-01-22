@@ -171,6 +171,7 @@ pub struct Process {
 pub struct ProcessBuilder {
     module_id: String,
     entrypoint: String,
+    log_uri: Option<String>,
     capabilities: Vec<Capability>,
     signature: AbiSignature,
     args: Vec<EntrypointArg>,
@@ -481,6 +482,7 @@ impl ProcessBuilder {
         Self {
             module_id: module_id.into(),
             entrypoint: entrypoint.into(),
+            log_uri: None,
             capabilities: vec![Capability::ChannelLifecycle, Capability::ChannelWriter],
             signature: AbiSignature::new(Vec::new(), Vec::new()),
             args: Vec::new(),
@@ -498,6 +500,12 @@ impl ProcessBuilder {
     /// Specify the entrypoint ABI signature.
     pub fn signature(mut self, signature: AbiSignature) -> Self {
         self.signature = signature;
+        self
+    }
+
+    /// Provide a log URI for the process when Atlas logging is enabled.
+    pub fn log_uri(mut self, value: impl Into<String>) -> Self {
+        self.log_uri = Some(value.into());
         self
     }
 
@@ -530,6 +538,7 @@ impl ProcessBuilder {
         Ok(ProcessStartRequest {
             module_id: self.module_id,
             entrypoint: self.entrypoint,
+            log_uri: self.log_uri,
             capabilities: self.capabilities,
             signature: self.signature,
             args: self.args,

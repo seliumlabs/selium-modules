@@ -158,6 +158,7 @@ async fn start_process(request: ProcessStartRequest) -> Result<ProcessHandle> {
     let ProcessStartRequest {
         module_id,
         entrypoint,
+        log_uri,
         capabilities,
         signature,
         args,
@@ -169,6 +170,16 @@ async fn start_process(request: ProcessStartRequest) -> Result<ProcessHandle> {
         ProcessBuilder::new(module_id, entrypoint).signature(signature),
         |builder, capability| builder.capability(*capability),
     );
+    #[cfg(feature = "atlas")]
+    let builder = {
+        let log_uri = log_uri.ok_or_else(|| anyhow!("log URI is required"))?;
+        builder.log_uri(log_uri)
+    };
+    #[cfg(not(feature = "atlas"))]
+    let builder = {
+        let _ = log_uri;
+        builder
+    };
 
     args.iter()
         .fold(builder, |builder, arg| match arg {

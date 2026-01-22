@@ -83,6 +83,8 @@ pub struct ProcessStartRequest {
     pub module_id: String,
     /// Entrypoint symbol exposed by the module.
     pub entrypoint: String,
+    /// Optional log URI passed to the entrypoint when Atlas is enabled.
+    pub log_uri: Option<String>,
     /// Capabilities granted to the process.
     pub capabilities: Vec<Capability>,
     /// Entrypoint signature describing parameter and result layouts.
@@ -494,6 +496,10 @@ fn encode_process_start_request<'bldr>(
 ) -> Result<flatbuffers::WIPOffset<fb::ProcessStartRequest<'bldr>>, ProtocolError> {
     let module_id = builder.create_string(&request.module_id);
     let entrypoint = builder.create_string(&request.entrypoint);
+    let log_uri = request
+        .log_uri
+        .as_ref()
+        .map(|value| builder.create_string(value));
     let capabilities = encode_capabilities(builder, &request.capabilities)?;
     let signature = encode_abi_signature(builder, &request.signature);
     let args = encode_entrypoint_args(builder, &request.args);
@@ -503,6 +509,7 @@ fn encode_process_start_request<'bldr>(
         &fb::ProcessStartRequestArgs {
             module_id: Some(module_id),
             entrypoint: Some(entrypoint),
+            log_uri,
             capabilities: Some(capabilities),
             signature: Some(signature),
             args: Some(args),
@@ -521,6 +528,7 @@ fn decode_process_start_request(
         .entrypoint()
         .ok_or(ProtocolError::MissingField("process_start.entrypoint"))?
         .to_string();
+    let log_uri = request.log_uri().map(|value| value.to_string());
     let capabilities = decode_capabilities(request.capabilities())?;
     let signature = request
         .signature()
@@ -531,6 +539,7 @@ fn decode_process_start_request(
     Ok(ProcessStartRequest {
         module_id,
         entrypoint,
+        log_uri,
         capabilities,
         signature,
         args,

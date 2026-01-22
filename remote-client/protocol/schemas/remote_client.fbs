@@ -87,6 +87,7 @@ table IoFrame {
 table ProcessStartRequest {
   module_id: string;
   entrypoint: string;
+  log_uri: string;
   capabilities: [Capability];
   signature: AbiSignature;
   args: [EntrypointArg];

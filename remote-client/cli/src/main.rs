@@ -82,6 +82,9 @@ struct StartArgs {
     /// For `buffer` parameters, prefix the value with `hex:` to pass arbitrary bytes.
     #[arg(short, long, value_parser = parse_argument, value_name = "VALUE|TYPE:VALUE")]
     arg: Vec<Argument>,
+    /// Log URI to register when Atlas logging is enabled.
+    #[arg(long)]
+    log_uri: Option<String>,
     /// Attach to the process logging stream after launch.
     #[arg(long)]
     attach: bool,
@@ -259,6 +262,7 @@ async fn start(domain: &str, port: u16, cert_dir: &Path, args: StartArgs) -> Res
         param,
         result,
         arg,
+        log_uri,
         attach,
     } = args;
     capability.extend(capabilities);
@@ -285,6 +289,10 @@ async fn start(domain: &str, port: u16, cert_dir: &Path, args: StartArgs) -> Res
         .try_fold(builder, |builder, (kind, raw)| {
             apply_argument(builder, kind, raw)
         })?;
+    let builder = match log_uri {
+        Some(log_uri) => builder.log_uri(log_uri),
+        None => builder,
+    };
 
     let process = Process::start(&client, builder)
         .await

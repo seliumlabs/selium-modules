@@ -20,9 +20,10 @@ impl<'a> ::flatbuffers::Follow<'a> for ProcessStartRequest<'a> {
 impl<'a> ProcessStartRequest<'a> {
   pub const VT_MODULE_ID: ::flatbuffers::VOffsetT = 4;
   pub const VT_ENTRYPOINT: ::flatbuffers::VOffsetT = 6;
-  pub const VT_CAPABILITIES: ::flatbuffers::VOffsetT = 8;
-  pub const VT_SIGNATURE: ::flatbuffers::VOffsetT = 10;
-  pub const VT_ARGS: ::flatbuffers::VOffsetT = 12;
+  pub const VT_LOG_URI: ::flatbuffers::VOffsetT = 8;
+  pub const VT_CAPABILITIES: ::flatbuffers::VOffsetT = 10;
+  pub const VT_SIGNATURE: ::flatbuffers::VOffsetT = 12;
+  pub const VT_ARGS: ::flatbuffers::VOffsetT = 14;
 
   #[inline]
   pub unsafe fn init_from_table(table: ::flatbuffers::Table<'a>) -> Self {
@@ -37,6 +38,7 @@ impl<'a> ProcessStartRequest<'a> {
     if let Some(x) = args.args { builder.add_args(x); }
     if let Some(x) = args.signature { builder.add_signature(x); }
     if let Some(x) = args.capabilities { builder.add_capabilities(x); }
+    if let Some(x) = args.log_uri { builder.add_log_uri(x); }
     if let Some(x) = args.entrypoint { builder.add_entrypoint(x); }
     if let Some(x) = args.module_id { builder.add_module_id(x); }
     builder.finish()
@@ -56,6 +58,13 @@ impl<'a> ProcessStartRequest<'a> {
     // Created from valid Table for this object
     // which contains a valid value in this slot
     unsafe { self._tab.get::<::flatbuffers::ForwardsUOffset<&str>>(ProcessStartRequest::VT_ENTRYPOINT, None)}
+  }
+  #[inline]
+  pub fn log_uri(&self) -> Option<&'a str> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<::flatbuffers::ForwardsUOffset<&str>>(ProcessStartRequest::VT_LOG_URI, None)}
   }
   #[inline]
   pub fn capabilities(&self) -> Option<::flatbuffers::Vector<'a, Capability>> {
@@ -88,6 +97,7 @@ impl ::flatbuffers::Verifiable for ProcessStartRequest<'_> {
     v.visit_table(pos)?
      .visit_field::<::flatbuffers::ForwardsUOffset<&str>>("module_id", Self::VT_MODULE_ID, false)?
      .visit_field::<::flatbuffers::ForwardsUOffset<&str>>("entrypoint", Self::VT_ENTRYPOINT, false)?
+     .visit_field::<::flatbuffers::ForwardsUOffset<&str>>("log_uri", Self::VT_LOG_URI, false)?
      .visit_field::<::flatbuffers::ForwardsUOffset<::flatbuffers::Vector<'_, Capability>>>("capabilities", Self::VT_CAPABILITIES, false)?
      .visit_field::<::flatbuffers::ForwardsUOffset<AbiSignature>>("signature", Self::VT_SIGNATURE, false)?
      .visit_field::<::flatbuffers::ForwardsUOffset<::flatbuffers::Vector<'_, ::flatbuffers::ForwardsUOffset<EntrypointArg>>>>("args", Self::VT_ARGS, false)?
@@ -98,6 +108,7 @@ impl ::flatbuffers::Verifiable for ProcessStartRequest<'_> {
 pub struct ProcessStartRequestArgs<'a> {
     pub module_id: Option<::flatbuffers::WIPOffset<&'a str>>,
     pub entrypoint: Option<::flatbuffers::WIPOffset<&'a str>>,
+    pub log_uri: Option<::flatbuffers::WIPOffset<&'a str>>,
     pub capabilities: Option<::flatbuffers::WIPOffset<::flatbuffers::Vector<'a, Capability>>>,
     pub signature: Option<::flatbuffers::WIPOffset<AbiSignature<'a>>>,
     pub args: Option<::flatbuffers::WIPOffset<::flatbuffers::Vector<'a, ::flatbuffers::ForwardsUOffset<EntrypointArg<'a>>>>>,
@@ -108,6 +119,7 @@ impl<'a> Default for ProcessStartRequestArgs<'a> {
     ProcessStartRequestArgs {
       module_id: None,
       entrypoint: None,
+      log_uri: None,
       capabilities: None,
       signature: None,
       args: None,
@@ -127,6 +139,10 @@ impl<'a: 'b, 'b, A: ::flatbuffers::Allocator + 'a> ProcessStartRequestBuilder<'a
   #[inline]
   pub fn add_entrypoint(&mut self, entrypoint: ::flatbuffers::WIPOffset<&'b  str>) {
     self.fbb_.push_slot_always::<::flatbuffers::WIPOffset<_>>(ProcessStartRequest::VT_ENTRYPOINT, entrypoint);
+  }
+  #[inline]
+  pub fn add_log_uri(&mut self, log_uri: ::flatbuffers::WIPOffset<&'b  str>) {
+    self.fbb_.push_slot_always::<::flatbuffers::WIPOffset<_>>(ProcessStartRequest::VT_LOG_URI, log_uri);
   }
   #[inline]
   pub fn add_capabilities(&mut self, capabilities: ::flatbuffers::WIPOffset<::flatbuffers::Vector<'b , Capability>>) {
@@ -160,6 +176,7 @@ impl ::core::fmt::Debug for ProcessStartRequest<'_> {
     let mut ds = f.debug_struct("ProcessStartRequest");
       ds.field("module_id", &self.module_id());
       ds.field("entrypoint", &self.entrypoint());
+      ds.field("log_uri", &self.log_uri());
       ds.field("capabilities", &self.capabilities());
       ds.field("signature", &self.signature());
       ds.field("args", &self.args());
