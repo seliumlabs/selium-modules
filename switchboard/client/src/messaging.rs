@@ -24,10 +24,22 @@ pub trait ClientTarget<Req, Rep> {
     fn endpoint_id(&self) -> EndpointId;
 }
 
+/// Targets that a [`Client`] can connect to for a given request/response pair.
+pub trait ClientTargets<Req, Rep> {
+    /// Return the target endpoint identifiers.
+    fn endpoint_ids(&self) -> Vec<EndpointId>;
+}
+
 /// Target that a [`Subscriber`] can connect to for a given payload type.
 pub trait SubscriberTarget<Req> {
     /// Return the target endpoint identifier.
     fn endpoint_id(&self) -> EndpointId;
+}
+
+/// Targets that a [`Subscriber`] can connect to for a given payload type.
+pub trait SubscriberTargets<Req> {
+    /// Return the target endpoint identifiers.
+    fn endpoint_ids(&self) -> Vec<EndpointId>;
 }
 
 /// Target that a [`Publisher`] or [`Fanout`] can connect to for a given payload type.
@@ -36,10 +48,22 @@ pub trait PublisherTarget<Rep> {
     fn endpoint_id(&self) -> EndpointId;
 }
 
+/// Targets that a [`Publisher`] or [`Fanout`] can connect to for a given payload type.
+pub trait PublisherTargets<Rep> {
+    /// Return the target endpoint identifiers.
+    fn endpoint_ids(&self) -> Vec<EndpointId>;
+}
+
 /// Target that a [`Server`] can connect to for a given request/response pair.
 pub trait ServerTarget<Req, Rep> {
     /// Return the target endpoint identifier.
     fn endpoint_id(&self) -> EndpointId;
+}
+
+/// Targets that a [`Server`] can connect to for a given request/response pair.
+pub trait ServerTargets<Req, Rep> {
+    /// Return the target endpoint identifiers.
+    fn endpoint_ids(&self) -> Vec<EndpointId>;
 }
 
 /// Disseminates data to zero or more [`Subscriber`]s.
@@ -91,9 +115,39 @@ impl<Req, Rep> ClientTarget<Req, Rep> for EndpointId {
     }
 }
 
+impl<Req, Rep> ClientTargets<Req, Rep> for EndpointId {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![*self]
+    }
+}
+
+impl<Req, Rep, T> ClientTargets<Req, Rep> for Vec<T>
+where
+    T: ClientTarget<Req, Rep>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
+impl<Req, Rep, T> ClientTargets<Req, Rep> for &[T]
+where
+    T: ClientTarget<Req, Rep>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
 impl<Req, Rep> ClientTarget<Req, Rep> for &Server<Req, Rep> {
     fn endpoint_id(&self) -> EndpointId {
         Server::endpoint_id(*self)
+    }
+}
+
+impl<Req, Rep> ClientTargets<Req, Rep> for &Server<Req, Rep> {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![self.endpoint_id()]
     }
 }
 
@@ -103,9 +157,39 @@ impl<Req> SubscriberTarget<Req> for EndpointId {
     }
 }
 
+impl<Req> SubscriberTargets<Req> for EndpointId {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![*self]
+    }
+}
+
+impl<Req, T> SubscriberTargets<Req> for Vec<T>
+where
+    T: SubscriberTarget<Req>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
+impl<Req, T> SubscriberTargets<Req> for &[T]
+where
+    T: SubscriberTarget<Req>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
 impl<Req> SubscriberTarget<Req> for &Publisher<Req> {
     fn endpoint_id(&self) -> EndpointId {
         Publisher::endpoint_id(*self)
+    }
+}
+
+impl<Req> SubscriberTargets<Req> for &Publisher<Req> {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![self.endpoint_id()]
     }
 }
 
@@ -115,9 +199,39 @@ impl<Req> SubscriberTarget<Req> for &Fanout<Req> {
     }
 }
 
+impl<Req> SubscriberTargets<Req> for &Fanout<Req> {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![self.endpoint_id()]
+    }
+}
+
 impl<Rep> PublisherTarget<Rep> for EndpointId {
     fn endpoint_id(&self) -> EndpointId {
         *self
+    }
+}
+
+impl<Rep> PublisherTargets<Rep> for EndpointId {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![*self]
+    }
+}
+
+impl<Rep, T> PublisherTargets<Rep> for Vec<T>
+where
+    T: PublisherTarget<Rep>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
+impl<Rep, T> PublisherTargets<Rep> for &[T]
+where
+    T: PublisherTarget<Rep>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
     }
 }
 
@@ -127,15 +241,51 @@ impl<Rep> PublisherTarget<Rep> for &Subscriber<Rep> {
     }
 }
 
+impl<Rep> PublisherTargets<Rep> for &Subscriber<Rep> {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![self.endpoint_id()]
+    }
+}
+
 impl<Req, Rep> ServerTarget<Req, Rep> for EndpointId {
     fn endpoint_id(&self) -> EndpointId {
         *self
     }
 }
 
+impl<Req, Rep> ServerTargets<Req, Rep> for EndpointId {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![*self]
+    }
+}
+
+impl<Req, Rep, T> ServerTargets<Req, Rep> for Vec<T>
+where
+    T: ServerTarget<Req, Rep>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
+impl<Req, Rep, T> ServerTargets<Req, Rep> for &[T]
+where
+    T: ServerTarget<Req, Rep>,
+{
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        self.iter().map(|target| target.endpoint_id()).collect()
+    }
+}
+
 impl<Req, Rep> ServerTarget<Req, Rep> for &Client<Req, Rep> {
     fn endpoint_id(&self) -> EndpointId {
         Client::endpoint_id(*self)
+    }
+}
+
+impl<Req, Rep> ServerTargets<Req, Rep> for &Client<Req, Rep> {
+    fn endpoint_ids(&self) -> Vec<EndpointId> {
+        vec![self.endpoint_id()]
     }
 }
 
@@ -170,18 +320,22 @@ where
         Ok(Self { endpoint })
     }
 
-    /// Connect this publisher to the supplied target, wiring outbound flows.
+    /// Connect this publisher to the supplied target(s), wiring outbound flows.
     pub async fn connect<T>(
         &self,
         switchboard: &Switchboard,
         target: T,
     ) -> Result<(), SwitchboardError>
     where
-        T: PublisherTarget<Rep>,
+        T: PublisherTargets<Rep>,
     {
-        switchboard
-            .connect_ids(self.endpoint_id(), target.endpoint_id())
-            .await
+        for endpoint_id in target.endpoint_ids() {
+            switchboard
+                .connect_ids(self.endpoint_id(), endpoint_id)
+                .await?;
+        }
+
+        Ok(())
     }
 
     /// Wait for outbound wiring to be established.
@@ -281,18 +435,22 @@ where
         Ok(Self { endpoint })
     }
 
-    /// Connect this subscriber to the supplied target, wiring inbound flows.
+    /// Connect this subscriber to the supplied target(s), wiring inbound flows.
     pub async fn connect<T>(
         &self,
         switchboard: &Switchboard,
         source: T,
     ) -> Result<(), SwitchboardError>
     where
-        T: SubscriberTarget<Req>,
+        T: SubscriberTargets<Req>,
     {
-        switchboard
-            .connect_ids(source.endpoint_id(), self.endpoint_id())
-            .await
+        for endpoint_id in source.endpoint_ids() {
+            switchboard
+                .connect_ids(endpoint_id, self.endpoint_id())
+                .await?;
+        }
+
+        Ok(())
     }
 
     /// Wait for inbound wiring to be established.
@@ -358,18 +516,22 @@ where
         Ok(Self { endpoint, next: 0 })
     }
 
-    /// Connect this fanout to the supplied target, wiring outbound flows.
+    /// Connect this fanout to the supplied target(s), wiring outbound flows.
     pub async fn connect<T>(
         &self,
         switchboard: &Switchboard,
         target: T,
     ) -> Result<(), SwitchboardError>
     where
-        T: PublisherTarget<Rep>,
+        T: PublisherTargets<Rep>,
     {
-        switchboard
-            .connect_ids(self.endpoint_id(), target.endpoint_id())
-            .await
+        for endpoint_id in target.endpoint_ids() {
+            switchboard
+                .connect_ids(self.endpoint_id(), endpoint_id)
+                .await?;
+        }
+
+        Ok(())
     }
 
     /// Wait for outbound wiring to be established.
@@ -466,20 +628,22 @@ where
         Ok(Self { endpoint })
     }
 
-    /// Connect this server to the supplied target, wiring request and reply flows.
+    /// Connect this server to the supplied target(s), wiring request and reply flows.
     pub async fn connect<T>(
         &self,
         switchboard: &Switchboard,
         client: T,
     ) -> Result<(), SwitchboardError>
     where
-        T: ServerTarget<Req, Rep>,
+        T: ServerTargets<Req, Rep>,
     {
-        let client_id = client.endpoint_id();
-        switchboard
-            .connect_ids(client_id, self.endpoint_id())
-            .await?;
-        switchboard.connect_ids(self.endpoint_id(), client_id).await
+        let server_id = self.endpoint_id();
+        for client_id in client.endpoint_ids() {
+            switchboard.connect_ids(client_id, server_id).await?;
+            switchboard.connect_ids(server_id, client_id).await?;
+        }
+
+        Ok(())
     }
 
     /// Wait for inbound and outbound wiring to be established.
@@ -568,20 +732,22 @@ where
         }
     }
 
-    /// Connect this client to the supplied target, wiring request and reply flows.
+    /// Connect this client to the supplied target(s), wiring request and reply flows.
     pub async fn connect<T>(
         &self,
         switchboard: &Switchboard,
         server: T,
     ) -> Result<(), SwitchboardError>
     where
-        T: ClientTarget<Req, Rep>,
+        T: ClientTargets<Req, Rep>,
     {
-        let server_id = server.endpoint_id();
-        switchboard
-            .connect_ids(self.endpoint_id(), server_id)
-            .await?;
-        switchboard.connect_ids(server_id, self.endpoint_id()).await
+        let client_id = self.endpoint_id();
+        for server_id in server.endpoint_ids() {
+            switchboard.connect_ids(client_id, server_id).await?;
+            switchboard.connect_ids(server_id, client_id).await?;
+        }
+
+        Ok(())
     }
 
     /// Wait for inbound and outbound wiring to be established.

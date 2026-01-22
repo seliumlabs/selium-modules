@@ -435,7 +435,7 @@ dependencies = [
 
 [[package]]
 name = "selium-switchboard"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "futures",
  "pin-project",
@@ -449,7 +449,7 @@ dependencies = [
 
 [[package]]
 name = "selium-switchboard-core"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "selium-switchboard-protocol",
  "thiserror 2.0.18",
@@ -457,7 +457,7 @@ dependencies = [
 
 [[package]]
 name = "selium-switchboard-protocol"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "flatbuffers",
  "flatbuffers-build",
@@ -467,7 +467,7 @@ dependencies = [
 
 [[package]]
 name = "selium-switchboard-server"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "futures",
