@@ -7,7 +7,7 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 
-use futures::{SinkExt, StreamExt};
+use futures::{FutureExt, SinkExt, StreamExt, future::BoxFuture};
 /// Flatbuffers protocol helpers for Atlas control messages.
 pub use selium_atlas_protocol as protocol;
 /// Atlas protocol types for convenience.
@@ -18,8 +18,9 @@ use selium_switchboard::{
     Client, Fanout, Publisher, Server, Subscriber, Switchboard, SwitchboardError,
 };
 use selium_userland::{
-    Dependency, DependencyDescriptor, dependency_id,
+    Context, Dependency, DependencyDescriptor, dependency_id,
     io::{Channel, DriverError, SharedChannel},
+    logging::{InitError, LogUriRegistrar, set_log_uri_registrar},
 };
 use thiserror::Error;
 use tracing::debug;
@@ -69,6 +70,8 @@ pub struct Atlas {
     request_channel: Channel,
     next_request_id: Arc<AtomicU64>,
 }
+
+struct AtlasLogUriRegistrar;
 
 /// Errors produced by the Atlas client.
 #[derive(Error, Debug)]
@@ -211,6 +214,34 @@ impl Dependency for Atlas {
     async fn from_handle(handle: Self::Handle) -> Result<Self, Self::Error> {
         Atlas::attach(handle).await
     }
+}
+
+impl LogUriRegistrar for AtlasLogUriRegistrar {
+    fn register<'a>(
+        &'a self,
+        log_uri: &'a str,
+        shared: SharedChannel,
+    ) -> BoxFuture<'a, Result<(), InitError>> {
+        async move {
+            let atlas = Context::current()
+                .singleton::<Atlas>()
+                .await
+                .map_err(|err| InitError::Register(format!("atlas lookup failed: {err}")))?;
+            let uri = Uri::parse(log_uri)
+                .map_err(|err| InitError::Register(format!("atlas log URI invalid: {err}")))?;
+            atlas
+                .insert(uri, shared.raw())
+                .await
+                .map_err(|err| InitError::Register(format!("atlas registration failed: {err}")))?;
+            Ok(())
+        }
+        .boxed()
+    }
+}
+
+/// Install the Atlas-backed log URI registrar for userland logging.
+pub fn install_log_uri_registrar() -> Result<(), InitError> {
+    set_log_uri_registrar(Box::new(AtlasLogUriRegistrar))
 }
 
 #[cfg(feature = "switchboard")]
