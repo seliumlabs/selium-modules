@@ -590,6 +590,7 @@ fn encode_capability(value: Capability) -> Result<fb::Capability, ProtocolError>
         Capability::NetTlsClientConfig => Ok(fb::Capability::NetTlsClientConfig),
         Capability::SingletonRegistry => Ok(fb::Capability::SingletonRegistry),
         Capability::SingletonLookup => Ok(fb::Capability::SingletonLookup),
+        Capability::TimeRead => Ok(fb::Capability::TimeRead),
     }
 }
 
@@ -614,6 +615,7 @@ fn decode_capability(value: fb::Capability) -> Result<Capability, ProtocolError>
         fb::Capability::NetTlsClientConfig => Ok(Capability::NetTlsClientConfig),
         fb::Capability::SingletonRegistry => Ok(Capability::SingletonRegistry),
         fb::Capability::SingletonLookup => Ok(Capability::SingletonLookup),
+        fb::Capability::TimeRead => Ok(Capability::TimeRead),
         _ => Err(ProtocolError::UnknownCapability),
     }
 }

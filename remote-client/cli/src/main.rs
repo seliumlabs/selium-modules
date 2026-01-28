@@ -130,6 +130,8 @@ enum CapabilityArg {
     SingletonRegistry,
     #[value(alias = "SingletonLookup")]
     SingletonLookup,
+    #[value(alias = "TimeRead")]
+    TimeRead,
 }
 
 impl From<CapabilityArg> for Capability {
@@ -154,6 +156,7 @@ impl From<CapabilityArg> for Capability {
             CapabilityArg::NetTlsClientConfig => Capability::NetTlsClientConfig,
             CapabilityArg::SingletonRegistry => Capability::SingletonRegistry,
             CapabilityArg::SingletonLookup => Capability::SingletonLookup,
+            CapabilityArg::TimeRead => Capability::TimeRead,
         }
     }
 }

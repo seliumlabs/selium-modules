@@ -26,3 +26,14 @@ selium-runtime \
   --work-dir /path/to/selium-runtime/work \
   --module "path=selium_remote_client_server.wasm;capabilities=ChannelLifecycle,ChannelReader,ChannelWriter,ProcessLifecycle,NetQuicBind,NetQuicAccept,NetQuicRead,NetQuicWrite;args=utf8:localhost,u16:7000"
 ```
+
+### Capabilities
+
+The CLI accepts the following capability names:
+
+```
+SessionLifecycle, ChannelLifecycle, ChannelReader, ChannelWriter, ProcessLifecycle,
+NetQuicBind, NetQuicAccept, NetQuicConnect, NetQuicRead, NetQuicWrite,
+NetHttpBind, NetHttpAccept, NetHttpConnect, NetHttpRead, NetHttpWrite,
+NetTlsServerConfig, NetTlsClientConfig, SingletonRegistry, SingletonLookup, TimeRead
+```

@@ -14,9 +14,6 @@ publish = false
 [lib]
 crate-type = ["cdylib"]
 
-[features]
-atlas = []
-
 [dependencies]
 anyhow = { workspace = true }
 futures = { workspace = true, features = ["std"] }

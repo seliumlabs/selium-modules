@@ -105,7 +105,7 @@ async fn dispatch(request: Request, reader: &mut Reader, writer: &mut Writer) ->
         }
         Request::Publish(handle) => {
             let chan = unsafe { Channel::from_raw(handle) };
-            let publ = chan.publish().await?;
+            let publ = chan.publish_weak().await?;
             send(Response::Ok, writer).await?;
             reader.map(|r| r.map(|f| f.payload)).forward(publ).await?;
         }
@@ -166,20 +166,13 @@ async fn start_process(request: ProcessStartRequest) -> Result<ProcessHandle> {
 
     ensure_permitted_capabilities(&capabilities)?;
 
-    let builder = capabilities.iter().fold(
+    let mut builder = capabilities.iter().fold(
         ProcessBuilder::new(module_id, entrypoint).signature(signature),
         |builder, capability| builder.capability(*capability),
     );
-    #[cfg(feature = "atlas")]
-    let builder = {
-        let log_uri = log_uri.ok_or_else(|| anyhow!("log URI is required"))?;
-        builder.log_uri(log_uri)
-    };
-    #[cfg(not(feature = "atlas"))]
-    let builder = {
-        let _ = log_uri;
-        builder
-    };
+    if let Some(uri) = log_uri {
+        builder = builder.log_uri(uri);
+    }
 
     args.iter()
         .fold(builder, |builder, arg| match arg {

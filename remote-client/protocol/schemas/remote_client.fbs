@@ -20,7 +20,8 @@ enum Capability: ubyte {
   NetTlsServerConfig = 15,
   NetTlsClientConfig = 16,
   SingletonRegistry = 17,
-  SingletonLookup = 18
+  SingletonLookup = 18,
+  TimeRead = 19,
 }
 
 enum AbiScalarType: ubyte {

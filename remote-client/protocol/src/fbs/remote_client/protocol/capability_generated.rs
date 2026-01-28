@@ -5,10 +5,10 @@ use super::*;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 pub const ENUM_MIN_CAPABILITY: u8 = 0;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MAX_CAPABILITY: u8 = 18;
+pub const ENUM_MAX_CAPABILITY: u8 = 19;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 #[allow(non_camel_case_types)]
-pub const ENUM_VALUES_CAPABILITY: [Capability; 19] = [
+pub const ENUM_VALUES_CAPABILITY: [Capability; 20] = [
   Capability::SessionLifecycle,
   Capability::ChannelLifecycle,
   Capability::ChannelReader,
@@ -28,6 +28,7 @@ pub const ENUM_VALUES_CAPABILITY: [Capability; 19] = [
   Capability::NetTlsClientConfig,
   Capability::SingletonRegistry,
   Capability::SingletonLookup,
+  Capability::TimeRead,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
@@ -54,9 +55,10 @@ impl Capability {
   pub const NetTlsClientConfig: Self = Self(16);
   pub const SingletonRegistry: Self = Self(17);
   pub const SingletonLookup: Self = Self(18);
+  pub const TimeRead: Self = Self(19);
 
   pub const ENUM_MIN: u8 = 0;
-  pub const ENUM_MAX: u8 = 18;
+  pub const ENUM_MAX: u8 = 19;
   pub const ENUM_VALUES: &'static [Self] = &[
     Self::SessionLifecycle,
     Self::ChannelLifecycle,
@@ -77,6 +79,7 @@ impl Capability {
     Self::NetTlsClientConfig,
     Self::SingletonRegistry,
     Self::SingletonLookup,
+    Self::TimeRead,
   ];
   /// Returns the variant's name or "" if unknown.
   pub fn variant_name(self) -> Option<&'static str> {
@@ -100,6 +103,7 @@ impl Capability {
       Self::NetTlsClientConfig => Some("NetTlsClientConfig"),
       Self::SingletonRegistry => Some("SingletonRegistry"),
       Self::SingletonLookup => Some("SingletonLookup"),
+      Self::TimeRead => Some("TimeRead"),
       _ => None,
     }
   }
