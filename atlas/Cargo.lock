@@ -577,9 +577,9 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "selium-abi"
-version = "1.0.0-alpha.3"
+version = "1.0.0-alpha.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8af119a43a7987d6efde3a41f274c604e6764b00d1ead88215747eff7f81229"
+checksum = "0565bb6b11a576fdce6c752edb13c77be8c2c23da96c2a5e0264864ca0c6c9fa"
 dependencies = [
  "rkyv",
  "thiserror 2.0.18",
@@ -587,7 +587,7 @@ dependencies = [
 
 [[package]]
 name = "selium-atlas"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "futures",
  "selium-atlas-protocol",
@@ -599,7 +599,7 @@ dependencies = [
 
 [[package]]
 name = "selium-atlas-protocol"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "flatbuffers",
  "flatbuffers-build",
@@ -610,7 +610,7 @@ dependencies = [
 
 [[package]]
 name = "selium-atlas-server"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "futures",
@@ -622,7 +622,7 @@ dependencies = [
 
 [[package]]
 name = "selium-switchboard"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "futures",
  "pin-project",
@@ -634,7 +634,7 @@ dependencies = [
 
 [[package]]
 name = "selium-switchboard-protocol"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "flatbuffers",
  "flatbuffers-build",
@@ -644,9 +644,9 @@ dependencies = [
 
 [[package]]
 name = "selium-userland"
-version = "1.0.0-alpha.3"
+version = "1.0.0-alpha.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eaa599930052999606a44e3e11dc8fcf7574371989f80ea09c05458c47dbed43"
+checksum = "243143a653d82a223628b2828d856b38c01b9dfef0a5ccc5226b582b358f08f5"
 dependencies = [
  "anyhow",
  "flatbuffers",
@@ -664,9 +664,9 @@ dependencies = [
 
 [[package]]
 name = "selium-userland-macros"
-version = "1.0.0-alpha.3"
+version = "1.0.0-alpha.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5362d692e937ffbfe6c0ef8b187fe6e538cd143fed08a5103cf31c63811bd1ab"
+checksum = "314f28e9963142b4167708fe4111f3c8f44d1f644224f2382e7c0a1be2756b1f"
 dependencies = [
  "blake3",
  "proc-macro-crate",
