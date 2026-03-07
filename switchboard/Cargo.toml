@@ -24,5 +24,5 @@ selium-switchboard-core = { path = "core", version = "0.4.2" }
 selium-switchboard-protocol = { path = "protocol", version = "0.4.2" }
 selium-userland = { version = "1.0.0-alpha.5", default-features = false }
 thiserror = { version = "2.0", default-features = false }
-tokio = { version = "1.49", default-features = false }
+tokio = { version = "1.50", default-features = false }
 tracing = { version = "0.1", default-features = false }
