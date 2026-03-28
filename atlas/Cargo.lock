@@ -167,6 +167,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "flatc-fork"
+version = "0.6.0+25.12.19-2026-02-06-03fffb2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f995c44278ee64981366ec17e6847f0756184a92ad0d3a1b6f7170f91e1eb129"
+dependencies = [
+ "cmake",
+]
+
+[[package]]
 name = "form_urlencoded"
 version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -596,7 +605,7 @@ version = "0.2.2"
 dependencies = [
  "flatbuffers",
  "flatbuffers-build",
- "flatc-fork",
+ "flatc-fork 0.6.0+25.12.19-2026-02-06-03fffb2",
  "thiserror 2.0.18",
  "url",
 ]
@@ -631,7 +640,7 @@ version = "0.4.2"
 dependencies = [
  "flatbuffers",
  "flatbuffers-build",
- "flatc-fork",
+ "flatc-fork 0.6.0+25.12.19-2026-02-06-03fffb2",
  "thiserror 2.0.18",
 ]
 
@@ -644,7 +653,7 @@ dependencies = [
  "anyhow",
  "flatbuffers",
  "flatbuffers-build",
- "flatc-fork",
+ "flatc-fork 0.5.0+25.12.19",
  "futures",
  "rkyv",
  "selium-abi",
