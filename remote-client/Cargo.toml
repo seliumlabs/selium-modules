@@ -28,6 +28,6 @@ selium-remote-client = { path = "client", version = "0.3.3" }
 selium-remote-client-protocol = { path = "protocol", version = "0.3.3" }
 selium-userland = { version = "1.0.0-alpha.6", default-features = false }
 thiserror = { version = "2.0", default-features = false }
-tokio = { version = "1.51", default-features = false }
+tokio = { version = "1.52", default-features = false }
 tracing = { version = "0.1", default-features = false }
 tracing-subscriber = { version = "0.3", default-features = false }
